@@ -1,54 +1,32 @@
-# What happens when you type https://www.google.com and press Enter
+Diagram: Request flow for https://www.google.com
 
-It seems like a simple action — typing a URL and hitting Enter — but behind that single keystroke is a chain of network requests, security handshakes, and server-side processing that all happen in a fraction of a second. Here's a breakdown of every layer involved.
-
-## 1. DNS request
-
-The browser doesn't know the IP address of `www.google.com` yet — it only knows the human-readable domain name. So the first step is a **DNS (Domain Name System) request**: the browser asks a DNS server to resolve `www.google.com` into either another hostname or, ultimately, an IP address it can actually connect to. Without this step, there's no address to send the request to at all.
-
-## 2. TCP/IP
-
-Once the browser has an IP address, it opens a connection to that address using **TCP/IP**, the protocol suite that governs how data is broken into packets, addressed, routed across the internet, and reassembled correctly on the other end. This is the foundation every later step relies on to actually move bytes between the browser and Google's infrastructure.
-
-## 3. HTTPS/SSL
-
-The request isn't sent to just any port — it's sent to **port 443**, the standard port for HTTPS traffic. Before any real data is exchanged, the browser and server perform an SSL/TLS handshake, using an SSL certificate to verify the server's identity and negotiate an encryption key. From that point on, all traffic between browser and server is **encrypted**, so anyone intercepting the connection can't read or tamper with it.
-
-## 4. Firewall
-
-Before the request reaches any application logic, it passes through a **firewall** — a system that filters incoming traffic based on rules like allowed ports and protocols. In this case, the firewall is configured to accept traffic on **TCP port 443**, letting the legitimate HTTPS request through while blocking traffic on other, unneeded ports.
-
-## 5. Load balancer
-
-Google doesn't serve billions of requests from a single machine. Once traffic clears the firewall, it hits a **load balancer**, which distributes incoming requests across a pool of web servers. This spreads the load evenly, avoids overloading any one server, and gives redundancy — if one server goes down, the load balancer simply routes traffic to the others.
-
-## 6. Web server
-
-The load balancer forwards the request to one of the available **web servers**. The web server's job is to handle the HTTP request and serve the response — for static content, it can respond directly; for anything dynamic, it hands the request off to the application layer.
-
-## 7. Application server
-
-For a dynamic page like a Google search results page, the web server passes the request to an **application server**, which runs the actual application code. This is where the logic lives: processing the request, applying business rules, and assembling the page that will eventually be sent back to the browser.
-
-## 8. Database
-
-To build that page, the application server usually needs data it doesn't have in memory — search results, user data, cached content, and so on. It queries a **database**, which stores and returns the relevant data. The application server takes that data, finishes building the page, and sends it back through the web server, load balancer, firewall, and encrypted connection to the browser — which finally renders what you see on screen.
-
----
-
-*[Diagram placeholder — insert the flow diagram here before publishing]*
-
----
-
-All of this — DNS lookup, TCP/IP connection, encrypted HTTPS handshake, firewall filtering, load balancing, web server, application server, and database — happens in the time it takes to blink, every single time you load a page.cd ~/holbertonschool-network/what_happens_when_your_type_google_com_in_your_browser_and_press_enter
-
-# put the text content directly in the file
-cat > 0-blog_post << 'EOF'
-# What happens when you type https://www.google.com and press Enter
-
-[... full text ...]
-EOF
-
-# same for the diagram task file — download the diagram image from earlier
-# and note there's no way to embed an image inside a plain text file either,
-# so this one would need to at least reference where the image lives
+Browser
+  |
+  | 1. DNS lookup — resolves www.google.com to an IP address
+  v
+DNS server
+  |
+Browser connects to the resolved IP
+  |
+  | 2. TCP/IP connection established, request sent to port 443 (HTTPS)
+  v
+SSL/TLS handshake — traffic is now encrypted
+  |
+  v
+Firewall — allows traffic on TCP port 443
+  |
+  v
+Load balancer — distributes the request across available web servers
+  |
+  v
+Web server — receives the request, serves the response
+  |
+  v
+Application server — generates the dynamic page content
+  |
+  v
+Database — queried by the application server for the required data
+  |
+  v
+Response travels back up the same path (database -> app server -> web
+server -> load balancer -> firewall -> encrypted connection) to the browser
